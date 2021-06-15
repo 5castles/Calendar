@@ -3,9 +3,17 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   font-family: "Varela Round", sans-serif;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .image-box{
-  width: 33%;
+  display: flex;
+  justify-content: center;
+}
+.image-box img{
+  width: 15%;
 }
 
 h1 {
