@@ -5,7 +5,9 @@ const todayInfo = document.querySelector(".js-date-info-box"),
     year = todayInfo.querySelector(".year"),
     calendarArea = document.querySelector(".js-calendar-area"),
     calendarBox = calendarArea.querySelector(".js-calendar-box"),
-    dayColumn = calendarBox.getElementsByClassName("day-column");
+    dayColumn = calendarBox.getElementsByClassName("day-column"),
+    previousMonth = calendarArea.querySelector(".pre-month-btn"),
+    nextMonth = calendarArea.querySelector(".next-month-btn");
 
 const dayObj = {
     0: "SUN",
@@ -79,7 +81,7 @@ function paintFirstWeek(dayNumber, month){
             day.appendChild(firstDate);
         } else if(parseInt(day.id) < dayNumber){
             const noMatch = document.createElement("span");
-            noMatch.innerText = " ";
+            noMatch.innerText = "-";
             day.appendChild(noMatch);
         } else if(parseInt(day.id) > dayNumber){
             const days = document.createElement("span");
@@ -88,43 +90,84 @@ function paintFirstWeek(dayNumber, month){
         }
     }
     const totalDays = daysInMonth[month]; //  monthNumber 를 인자로 넣어야한다. !- 수정했음일단.
-    paintTheRests(totalDays);
+    paintTheRest(totalDays);
 }
 
-function paintTheRests(total){
+function paintTheRest(total){
+    const notNull = [];
     for(i=0; i<7; i++){
         const day = dayColumn[i];
         const count = day.lastChild.innerText;
-        
+
         if(parseInt(count) !== null && (parseInt(count)+7) <= total){
             const number = document.createElement("span");
             number.innerText = parseInt(count) +7;
             day.appendChild(number);
-        } /*
-        else {
-            for(j=0; j<7; j++){
-                const nextDay = dayColumn[i+j];
-                const nextCount = nextDay.lastChild.innerText;
-                if(parseInt(nextCount) !== NaN && (parseInt(nextCount)+6) <= total){
-                    const num = document.createElement("span");
-                    num.innerText = parseInt(nextCount) +6;
-                    day.appendChild(num);
-                
-                }
+            notNull.push(i);
+            while((parseInt(day.lastChild.innerText)+7) <= total){
+                const number = document.createElement("span");
+                number.innerText = parseInt(day.lastChild.innerText) +7;
+                day.appendChild(number);
             }
-        }
-        /*
-        while((count+7) <= total){
+        } 
+    }
+    const dayNumOfFirstdate = notNull[0]
+    for(j=0; j<dayNumOfFirstdate; j++){
+        const day = dayColumn[j];
+        const number = document.createElement("span");
+        number.innerText = 8 - (dayNumOfFirstdate-j)
+        day.appendChild(number);
+        while((parseInt(day.lastChild.innerText))+7 <= total){
             const number = document.createElement("span");
-            number.innerText = count +7;
+            number.innerText = parseInt(day.lastChild.innerText) +7;
             day.appendChild(number);
         }
-       // if(day.        ){}*/
     }
 }
 
+/* 다음 달, 이전 달 보기 버튼 클릭시, 현재 캘린더 클린 
+function cleanCalendar(){
+    for(i=0; i<7; i++){
+        const day = dayColumn[i];
+        while(day.lastChild !== day.label){
+            delete day.lastChild;
+        }   
+    }
+}
+*/
+
+
+function moveToNextMonth(){
+    //cleanCalendar();
+    const makeDate = new Date();
+    const monthNumNow = makeDate.getMonth(); //0~11
+    const yearNow = makeDate.getFullYear();
+
+    const makeNextMonth = new Date(yearNow, monthNumNow+1);
+
+    const dayNum = makeNextMonth.getDay(); // 0~6
+    const dateOfNext = makeNextMonth.getDate();
+    const monthNum = makeNextMonth.getMonth(); //0~11
+    const yearOfNext = makeNextMonth.getFullYear();
+    
+    
+    day.innerText = dayObj[dayNum];     
+    date.innerText = dateOfNext;
+    month.innerText = monthObj[monthNum];
+    year.innerText = yearOfNext;
+
+    checkDay(yearOfNext, monthNum);
+}
+/*
+function moveToPreviousMonth(){
+
+}
+*/
+
 function init(){
     getTodayInfo();
+    nextMonth.addEventListener("click", moveToNextMonth);
+    
 }
 
 init();

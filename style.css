@@ -37,10 +37,12 @@ h1 {
 .js-calendar-area{
   display:flex;
   justify-content: center;
+  align-items: center;
 
 }
 .js-calendar-box{
   display:flex;
+  margin: 0 30px;
 }
 .day-column{
   display: flex;
