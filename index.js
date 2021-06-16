@@ -63,11 +63,12 @@ function getTodayInfo(){
 }
 function checkDay(year, month){
     const check = new Date(year, month);
-    const dayOfFirstDate = check.getDay();    
-    paintFirstWeek(dayOfFirstDate) 
+    const dayOfFirstDate = check.getDay();     // 현재 달의 첫째날 요일!!
+    const currentMonth = check.getMonth();
+    paintFirstWeek(dayOfFirstDate, currentMonth) 
 } 
 
-function paintFirstWeek(dayNumber){
+function paintFirstWeek(dayNumber, month){
     //달력 요일 id 와 대조 -> 일치하는 요일에 "1일" 표기
     //dayColumn[i].addEventListner("change", handleChange);
     for(i=0; i<7; i++){
@@ -86,7 +87,7 @@ function paintFirstWeek(dayNumber){
             day.appendChild(days)            
         }
     }
-    const totalDays = daysInMonth[dayNumber];
+    const totalDays = daysInMonth[month]; //  monthNumber 를 인자로 넣어야한다. !- 수정했음일단.
     paintTheRests(totalDays);
 }
 
@@ -95,12 +96,11 @@ function paintTheRests(total){
         const day = dayColumn[i];
         const count = day.lastChild.innerText;
         
-        if(parseInt(count) !== NaN && (parseInt(count)+7) <= total){
+        if(parseInt(count) !== null && (parseInt(count)+7) <= total){
             const number = document.createElement("span");
             number.innerText = parseInt(count) +7;
             day.appendChild(number);
-        } 
-        
+        } /*
         else {
             for(j=0; j<7; j++){
                 const nextDay = dayColumn[i+j];
