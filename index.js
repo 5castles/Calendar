@@ -166,44 +166,77 @@ function cleanCalendar(){
 
 function moveToNextMonth(){
     cleanCalendar();
-    const makeDate = new Date();
-    const yearNow = makeDate.getFullYear();
+    const yearNow = year.innerText;
     //현재 페이지의 month info 가져와서 +1 = 다음달 정보 가져오기 
     const currentMonthNumber = monthObjReverse[month.innerText];
-    const makeNextMonth = new Date(yearNow, currentMonthNumber+1);
+    if(currentMonthNumber !== 11){
+        const makeNextMonth = new Date(yearNow, currentMonthNumber+1);
+        //
+        const dayNum = makeNextMonth.getDay(); // 0~6
+        const dateOfNext = makeNextMonth.getDate();
+        const monthNum = makeNextMonth.getMonth(); //0~11
+        const yearOfNext = makeNextMonth.getFullYear();
+        
+        day.innerText = dayObj[dayNum];     
+        date.innerText = dateOfNext;
+        month.innerText = monthObj[monthNum];
+        year.innerText = yearOfNext;
 
-    const dayNum = makeNextMonth.getDay(); // 0~6
-    const dateOfNext = makeNextMonth.getDate();
-    const monthNum = makeNextMonth.getMonth(); //0~11
-    const yearOfNext = makeNextMonth.getFullYear();
+        checkDay(yearOfNext, monthNum);
+    } else if(currentMonthNumber === 11){
+        const yearNow = year.innerText;
+        const makeNextMonth = new Date(parseInt(yearNow)+1, 0); // 1월
+        
+        const dayNum = makeNextMonth.getDay(); // 0~6
+        const dateOfNext = makeNextMonth.getDate();
+        const monthNum = makeNextMonth.getMonth(); //0~11
+        const yearOfNext = makeNextMonth.getFullYear();
+        
+        day.innerText = dayObj[dayNum];     
+        date.innerText = dateOfNext;
+        month.innerText = monthObj[monthNum];
+        year.innerText = yearOfNext;
+        checkDay(yearOfNext, monthNum);
+    }
     
-    day.innerText = dayObj[dayNum];     
-    date.innerText = dateOfNext;
-    month.innerText = monthObj[monthNum];
-    year.innerText = yearOfNext;
 
-    checkDay(yearOfNext, monthNum);
 }
 
 function moveToPreviousMonth(){
     cleanCalendar();
-    const makeDate = new Date();
-    const yearNow = makeDate.getFullYear();
+    const yearNow = year.innerText;
     //이전 달 정보 가져오기 - 현재 페이지의 month info 가져와서 -1  
     const currentMonthNumber = monthObjReverse[month.innerText];
-    const makePreviousMonth = new Date(yearNow, currentMonthNumber-1);
-
-    const dayNum = makePreviousMonth.getDay(); // 0~6
-    const dateOfPre = makePreviousMonth.getDate();
-    const monthNum = makePreviousMonth.getMonth(); //0~11
-    const yearOfPre = makePreviousMonth.getFullYear();
+    if(currentMonthNumber !== 0){
+        const makePreviousMonth = new Date(yearNow, currentMonthNumber-1);
+        //
+        const dayNum = makePreviousMonth.getDay(); // 0~6
+        const dateOfPre = makePreviousMonth.getDate();
+        const monthNum = makePreviousMonth.getMonth(); //0~11
+        const yearOfPre = makePreviousMonth.getFullYear();
     
-    day.innerText = dayObj[dayNum];     
-    date.innerText = dateOfPre;
-    month.innerText = monthObj[monthNum];
-    year.innerText = yearOfPre;
+        day.innerText = dayObj[dayNum];     
+        date.innerText = dateOfPre;
+        month.innerText = monthObj[monthNum];
+        year.innerText = yearOfPre;
 
-    checkDay(yearOfPre, monthNum);
+        checkDay(yearOfPre, monthNum)
+    }   else if(currentMonthNumber === 0){
+        const yearNow = year.innerText;
+        const makePreviousMonth = new Date(parseInt(yearNow)-1, 11) // 12월 
+
+        const dayNum = makePreviousMonth.getDay(); // 0~6
+        const dateOfPre = makePreviousMonth.getDate();
+        const monthNum = makePreviousMonth.getMonth(); //0~11
+        const yearOfPre = makePreviousMonth.getFullYear();
+    
+        day.innerText = dayObj[dayNum];     
+        date.innerText = dateOfPre;
+        month.innerText = monthObj[monthNum];
+        year.innerText = yearOfPre;
+
+        checkDay(yearOfPre, monthNum)
+    }
 }
 
 function colorUpdate(anything){
