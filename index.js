@@ -33,7 +33,6 @@ const monthObj = {
     10: "NOV",
     11: "DEC"
 }
-
 const monthObjReverse ={
     JAN: 0,
     FEB: 1,
@@ -48,7 +47,6 @@ const monthObjReverse ={
     NOV: 10,
     DEC: 11
 }
-
 const daysInMonth = {
     0: 31,
     1: 28,
@@ -64,7 +62,8 @@ const daysInMonth = {
     11: 31
 }
 
-//Obj 프로퍼티 키값 읽기 -  Obj[key값]
+//현재 날짜 생성 - Obj 프로퍼티 key 대입 - 현재 날짜 정보 표기
+//객체 프로퍼티 접근: Obj[key]
 function getTodayInfo(){
     const makeDate = new Date();
     const dayNumNow = makeDate.getDay(); // 0~6
@@ -75,22 +74,22 @@ function getTodayInfo(){
     date.innerText = dateNow;
     month.innerText = monthObj[monthNumNow];
     year.innerText = yearNow;
-    //현재 월의 1일이 무슨 요일인지 판별 후 해당 요일 라벨링에 1일 표기하기
+    //생성한 날의 년,월의 1일 요일 판별하여 1일 표기하기
     checkDay(yearNow, monthNumNow);
 
 }
 
-
+//해당 날짜의 월 정보, 1일의 요일 정보
 function checkDay(year, month){
-    const check = new Date(year, month);
-    const dayOfFirstDate = check.getDay();     // 현재 달의 첫째날 요일!!
+    const check = new Date(year, month); 
+    // 해당 월 1일의 요일
+    const dayOfFirstDate = check.getDay();     
     const currentMonth = check.getMonth();
     paintFirstWeek(dayOfFirstDate, currentMonth) 
 } 
 
+//첫째 주 날짜 생성하기 - 1일 넘버와 각 요일의 넘버(id) 비교
 function paintFirstWeek(dayNumber, month){
-    //달력 요일 id 와 대조 -> 일치하는 요일에 "1일" 표기
-    //dayColumn[i].addEventListner("change", handleChange);
     const theFirstDay = [];
     for(i=0; i<7; i++){
         const day = dayColumn[i];
@@ -100,46 +99,46 @@ function paintFirstWeek(dayNumber, month){
             day.appendChild(firstDate);
             theFirstDay.push(firstDate.parentNode);
         } else if(parseInt(day.id) < dayNumber){
-            const noMatch = document.createElement("span");
-            noMatch.innerText = "-";
-            day.appendChild(noMatch);
+            const noDay = document.createElement("span");
+            noDay.innerText = "-";
+            day.appendChild(noDay);
         } else if(parseInt(day.id) > dayNumber){
-            //(요일number - 1일의 요일Number)의 값만큼 1에 더하기.   
+            //첫째주 나머지 날짜 생성 -> (첫째날 1) + ((요일number) - (1일의 요일Number))의 값 
             const num = parseInt(day.id) - parseInt(theFirstDay[0].id);
             const days = document.createElement("span");
             days.innerText = 1+num;
             day.appendChild(days)            
         }
     }
-    const totalDays = daysInMonth[month]; //  monthNumber 를 인자로 넣어야한다. !- 수정했음일단.
+    const totalDays = daysInMonth[month]; 
     paintTheRest(totalDays);
  
 }
-
+//나머지 날짜 생성
 function paintTheRest(total){
-    const notNull = [];
+    const firstWeek = [];
     for(i=0; i<7; i++){
         const day = dayColumn[i];
         const count = day.lastChild.innerText;
 
-        if(parseInt(count) !== null && (parseInt(count)+7) <= total){
+        if(parseInt(count) >= 1){
             const number = document.createElement("span");
             number.innerText = parseInt(count) +7;
             day.appendChild(number);
-            notNull.push(i);
+            firstWeek.push(i);
             while((parseInt(day.lastChild.innerText)+7) <= total){
                 const number = document.createElement("span");
                 number.innerText = parseInt(day.lastChild.innerText) +7;
                 day.appendChild(number);
             }
         } 
-
     }
-    const dayNumOfFirstdate = notNull[0]
+    //첫째주 날짜 표기 안된 요일Column 나머지 날짜 생성
+    const dayNumOfFirstdate = firstWeek[0];
     for(j=0; j<dayNumOfFirstdate; j++){
         const day = dayColumn[j];
         const number = document.createElement("span");
-        number.innerText = 8 - (dayNumOfFirstdate-j)
+        number.innerText = 8 - (dayNumOfFirstdate-j);
         day.appendChild(number);
         while((parseInt(day.lastChild.innerText))+7 <= total){
             const number = document.createElement("span");
@@ -150,13 +149,32 @@ function paintTheRest(total){
     addEventListenerClickedUpdate();
 }
 
+//모든 날짜 addEventListener 추가
+function addEventListenerClickedUpdate(){
+    for(i=0; i<7; i++){
+        const dateOnCal = dayColumn[i].querySelectorAll("span")
+        //dataOnCal 마지막요소에 unidentified 있는데. 이것을 제외하지 않으면 아래에서 addEventListener 작동이 안된다. 
+        //왜 unidentified가 마지막에 있는지 지금은 모르겠지만 일단 함수를 실행시키기 위해서 (.length-1)를 통해 마지막요소는 빼주었다.
+        for(j=1; j<=dateOnCal.length -1; j++){ 
+            dateOnCal[j].addEventListener("click", clickedDateUpdate)        
+        }
+    }
+}
+//클릭 날짜 메인화면 표기 
+function clickedDateUpdate(event){
+    const clicked = event.target;
+    colorUpdate(clicked);
+    const clickedDayNum = parseInt(clicked.parentNode.id);
+    const clickedDate = clicked.innerText;
 
-//다음 달, 이전 달 보기 버튼 클릭시, 현재 캘린더 클린 
+    date.innerText = clickedDate;
+    day.innerText = dayObj[clickedDayNum];   
+}
+
+//현재 캘린더 클린  **.removeChild() 모양 확인!
 function cleanCalendar(){
     for(i=0; i<7; i++){
-        
         let yes = dayColumn[i];
-
         while(yes.firstElementChild !== yes.lastElementChild){
             yes.removeChild(yes.lastChild)
         }        
@@ -167,7 +185,7 @@ function cleanCalendar(){
 function moveToNextMonth(){
     cleanCalendar();
     const yearNow = year.innerText;
-    //현재 페이지의 month info 가져와서 +1 = 다음달 정보 가져오기 
+    //현재 브라우저화면 1월~11월 month Num +1 -> 다음달 Date 생성
     const currentMonthNumber = monthObjReverse[month.innerText];
     if(currentMonthNumber !== 11){
         const makeNextMonth = new Date(yearNow, currentMonthNumber+1);
@@ -183,7 +201,9 @@ function moveToNextMonth(){
         year.innerText = yearOfNext;
 
         checkDay(yearOfNext, monthNum);
-    } else if(currentMonthNumber === 11){
+    } 
+    //현재 브라우저화면이 12월 일때 year Num +1 -> 다음 년도 1월 Date 생성
+        else if(currentMonthNumber === 11){
         const yearNow = year.innerText;
         const makeNextMonth = new Date(parseInt(yearNow)+1, 0); // 1월
         
@@ -205,7 +225,7 @@ function moveToNextMonth(){
 function moveToPreviousMonth(){
     cleanCalendar();
     const yearNow = year.innerText;
-    //이전 달 정보 가져오기 - 현재 페이지의 month info 가져와서 -1  
+    //현재 브라우저화면 2월~12월 month Num -1 -> 이전달 Date 생성
     const currentMonthNumber = monthObjReverse[month.innerText];
     if(currentMonthNumber !== 0){
         const makePreviousMonth = new Date(yearNow, currentMonthNumber-1);
@@ -221,7 +241,9 @@ function moveToPreviousMonth(){
         year.innerText = yearOfPre;
 
         checkDay(yearOfPre, monthNum)
-    }   else if(currentMonthNumber === 0){
+    }   
+    //현재 브라우저화면이 1월 일때 year Num -1 -> 이전 년도 12월 Date 생성
+        else if(currentMonthNumber === 0){
         const yearNow = year.innerText;
         const makePreviousMonth = new Date(parseInt(yearNow)-1, 11) // 12월 
 
@@ -242,37 +264,21 @@ function moveToPreviousMonth(){
 function colorUpdate(anything){
     for(i=0; i<7; i++){
         const dateOnCal = dayColumn[i].querySelectorAll("span")
-        for(j=1; j<=dateOnCal.length -1; j++){ //dataOnCal 마지막요소에 unidentified 있는데. 이것을 제외하지 않으면 아래에서 addEventListener 함수를 실행시킬수가 없다. 왜 unidentified가 마지막에 있는지 지금은 모르지만 일단 함수를 실행시키기 위해서 -1해주었다.
+        //dataOnCal 마지막요소에 unidentified 있는데. 이것을 제외하지 않으면 아래에서 addEventListener 작동이 안된다. 
+        //왜 unidentified가 마지막에 있는지 지금은 모르겠지만 일단 함수를 실행시키기 위해서 (.length-1)를 통해 마지막요소는 빼주었다.
+        for(j=1; j<=dateOnCal.length -1; j++){ 
             dateOnCal[j].classList.remove("clicked");
         }
     }
     anything.classList.add("clicked");
 }
-function clickedDateUpdate(event){
-    const clicked = event.target;
-    colorUpdate(clicked);
-    const clickedDayNum = parseInt(clicked.parentNode.id);
-    const clickedDate = clicked.innerText;
-
-    date.innerText = clickedDate;
-    day.innerText = dayObj[clickedDayNum];
-    
-}
-function addEventListenerClickedUpdate(){
-    for(i=0; i<7; i++){
-        const dateOnCal = dayColumn[i].querySelectorAll("span")
-        for(j=1; j<=dateOnCal.length -1; j++){ //dataOnCal 마지막요소에 unidentified 있는데. 이것을 제외하지 않으면 아래에서 addEventListener 함수를 실행시킬수가 없다. 왜 unidentified가 마지막에 있는지 지금은 모르지만 일단 함수를 실행시키기 위해서 -1해주었다.
-            dateOnCal[j].addEventListener("click", clickedDateUpdate)
-        
-        }
-    }
-}
-
+//페이지 로드 시 달력에 날짜 빨간색 색칠업데이트 
 function firstColor(){
     for(i=0; i<7; i++){
         const dateOnCal = dayColumn[i].querySelectorAll("span")
-        for(j=1; j<=dateOnCal.length -1; j++){ //dataOnCal 마지막요소에 unidentified 있는데. 이것을 제외하지 않으면 아래에서 addEventListener 함수를 실행시킬수가 없다. 왜 unidentified가 마지막에 있는지 지금은 모르지만 일단 함수를 실행시키기 위해서 -1해주었다.
-            //달력에 날짜 빨간색 색칠업데이트 
+         //dataOnCal 마지막요소에 unidentified 있는데. 이것을 제외하지 않으면 아래에서 addEventListener 작동이 안된다. 
+        //왜 unidentified가 마지막에 있는지 지금은 모르겠지만 일단 함수를 실행시키기 위해서 (.length-1)를 통해 마지막요소는 빼주었다.
+        for(j=1; j<=dateOnCal.length -1; j++){ 
             const makeDate = new Date();
             const dateNow = makeDate.getDate();
             if(parseInt(dateOnCal[j].innerText) === dateNow){
